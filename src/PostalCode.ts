@@ -1,3 +1,23 @@
+import fs from "fs";
+import readline from "readline";
+
+export class PostalCodeRepository {
+  static txtFilePath: string;
+  static async getCode(code: string) {
+    if (!this.txtFilePath)
+      throw new Error("File path not specified for repository!");
+    const fileStream = fs.createReadStream(PostalCodeRepository.txtFilePath, {
+      encoding: "utf-8",
+    });
+    const rl = readline.createInterface({
+      input: fileStream,
+      crlfDelay: Infinity,
+    });
+    for await (const line of rl) if (code === line) return true;
+    return false;
+  }
+}
+
 export default abstract class PostalCode {
   private postalCode: string;
   constructor(postalCode: string) {
@@ -9,6 +29,13 @@ export default abstract class PostalCode {
   getCode() {
     return this.postalCode;
   }
+  async isOnRecord() {
+    if (await PostalCodeRepository.getCode(this.postalCode)) return true;
+    return false;
+  }
+  length() {
+    return this.postalCode.length;
+  }
   protected abstract validate(): boolean;
 }
 
@@ -18,7 +45,7 @@ export class BritishPostalCode extends PostalCode {
     this.validate();
   }
   validate(): boolean {
-    if (/^[A-Z]{1,2}[0-9]{1,2} [0-9][A-Z]{2}$/.test(this.getCode()))
+    if (/^[A-Z]{1,2}[0-9][A-Z] [0-9][A-Z]{2}$/.test(this.getCode()))
       return true;
     else
       throw new PostalCodeException(
