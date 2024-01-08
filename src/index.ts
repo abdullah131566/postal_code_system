@@ -30,9 +30,10 @@ class PostalTest {
   }
 }
 
-const pc: PostalCode = new BritishPostalCode("SW6A 1AA");
-PostalCodeRepository.txtFilePath = "src/postal-records.txt"
-pc.isOnRecord().then((res) => {
-  if (res) console.log(pc.getCode(), "is on record.");
-  else console.log(pc.getCode(), "is NOT on record.")
-});
+const pc = new BritishPostalCode("SW6A 1AA");
+// PostalCodeRepository.codesFilePath = "src/postal-records.txt"
+// pc.isOnRecord().then((res) => {
+//   if (res) console.log(pc.getCode(), "is on record.");
+//   else console.log(pc.getCode(), "is NOT on record.")
+// });
+pc.setDestination().then(()=>console.log(pc.getDestination()))
